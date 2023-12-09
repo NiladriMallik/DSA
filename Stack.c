@@ -1,4 +1,5 @@
 #include<stdio.h>
+#include<stdlib.h>
 #define SIZE 10
 
 
@@ -14,7 +15,7 @@ int pop(Stack*);
 
 void push(Stack *sp, int value){
     if(sp->top == SIZE-1){
-        printf("Stack is overflow");
+        printf("Stack is overflowing.\n");
         return;
     }
 
@@ -41,19 +42,38 @@ void init(Stack *sp){
 
 int main(){
 
-    Stack s1, s2;
+    Stack s1;
+    init (&s1);
 
-    init(&s1);
-    init(&s2);
+    printf("1. Push\n");
+    printf("2. Pop\n");
+    printf("3. Exit\n");
 
-    push(&s1,100);
-    push(&s1,200);
+    int choice, value;
 
-    printf("Deleted from s1: %d\n", pop(&s1));
-    printf("Deleted from s1: %d\n", pop(&s1));
-    printf("Deleted from s1: %d\n", pop(&s1));
+    while(1){
+        printf("Enter choice: ");
+        scanf("%d",&choice);
+        switch(choice){
+            case 1: 
+                    printf("Enter value to push: ");
+                    scanf("%d", &value);
+                    push(&s1, value);
+                    break;
 
+            case 2: 
+                    value = pop(&s1);
+                    if (value!= -9999){
+                        printf("Popped data: %d.\n",value);
+                    }
+                    break;
+            case 3:
+                    exit(0);
 
-
+            default:
+                    printf("Invalid choice!");
+                    break;
+        }
+    }
     return 0;
 }
