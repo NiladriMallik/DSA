@@ -14,12 +14,34 @@ void init(Stack *, int);
 void push(Stack *, int);
 int pop(Stack*);
 void deallocate(Stack *sp);
+int getSize(Stack *sp);
 
+
+int getSize(Stack *sp){
+    return sp->size;
+}
 
 void push(Stack *sp, int value){
     if(sp->top == sp->size-1){
-        printf("Stack is overflowing.\n");
-        return;
+        /*
+        Instead of showing message stack overflow and returning to caller,
+        we can grow the array to double its size by retaining the existing value
+        */
+        int *temp;
+        temp = (int*) malloc(sizeof(int) * sp->size * 2);
+        if (temp == NULL){
+            printf("Stack overflow!");
+            return;
+        }
+        //Otherwise, double sized array has been allocated.
+        //We can now copy the existing content to the temp array.
+        int i;
+        for(i=0;i<=sp->top;i++){
+            temp[i] = sp->item[i];
+        }
+        free(sp->item);
+        sp->item = temp;
+        sp->size *= 2;
     }
     sp->top++;
     sp->item[sp->top] = value;
@@ -53,11 +75,12 @@ void deallocate(Stack *sp){
     if(sp->item != NULL){
         free(sp->item);
     }
+    sp->top = -1;
+    sp->size = 0;
 }
 
 
 int main(){
-
     Stack s1;
     int choice, value, size;
 
@@ -69,19 +92,16 @@ int main(){
     printf("2. Pop\n");
     printf("3. Exit\n");
 
-    
-
     while(1){
         printf("Enter choice: ");
         scanf("%d",&choice);
-
+        printf("Size of stack: %d.\n",getSize(&s1));
         switch(choice){
             case 1: 
                     printf("Enter value to push: ");
                     scanf("%d", &value);
                     push(&s1, value);
                     break;
-
             case 2: 
                     value = pop(&s1);
                     if (value!= -9999){
@@ -91,7 +111,6 @@ int main(){
             case 3:
                     deallocate(&s1);
                     exit(0);
-
             default:
                     printf("Invalid choice!\n");
                     break;
