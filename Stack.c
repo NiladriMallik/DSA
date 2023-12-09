@@ -1,33 +1,34 @@
 #include<stdio.h>
 #include<stdlib.h>
-#define SIZE 10
-
 
 typedef struct {
-    int item[SIZE];
+    /*
+    For the stack to be dynamically allocated we need to have a pointer to hold the base address of the arrray, also, since the size will be different for different instances of Stack so we need to keep the size inside the struct object.
+    */
+    int *item;
     int top;
+    int size;
 } Stack;
 
-void init(Stack *);
+void init(Stack *, int);
 void push(Stack *, int);
 int pop(Stack*);
+void deallocate(Stack *sp);
 
 
 void push(Stack *sp, int value){
-    if(sp->top == SIZE-1){
+    if(sp->top == sp->size-1){
         printf("Stack is overflowing.\n");
         return;
     }
-
     sp->top++;
     sp->item[sp->top] = value;
 }
 
 
 int pop(Stack *sp){
-
     if(sp->top == -1){
-        printf("Stack underflow");
+        printf("Stack underflow.\n");
         return -9999;
     }
     int value = sp->item[sp->top];
@@ -35,25 +36,45 @@ int pop(Stack *sp){
     return value;
 }
 
-void init(Stack *sp){
+
+void init(Stack *sp, int size){
     sp->top = -1;
+    sp->item = (int* )malloc(sizeof(int) * size);
+    sp->size = size;
+
+    if(sp->item == NULL){
+        printf("Unable to allocate memory.\n");
+        exit(1);
+    }
+}
+
+
+void deallocate(Stack *sp){
+    if(sp->item != NULL){
+        free(sp->item);
+    }
 }
 
 
 int main(){
 
     Stack s1;
-    init (&s1);
+    int choice, value, size;
+
+    printf("Enter the size of the stack: ");
+    scanf("%d",&size);
+    init (&s1, size);
 
     printf("1. Push\n");
     printf("2. Pop\n");
     printf("3. Exit\n");
 
-    int choice, value;
+    
 
     while(1){
         printf("Enter choice: ");
         scanf("%d",&choice);
+
         switch(choice){
             case 1: 
                     printf("Enter value to push: ");
@@ -68,10 +89,11 @@ int main(){
                     }
                     break;
             case 3:
+                    deallocate(&s1);
                     exit(0);
 
             default:
-                    printf("Invalid choice!");
+                    printf("Invalid choice!\n");
                     break;
         }
     }
