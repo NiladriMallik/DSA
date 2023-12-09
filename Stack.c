@@ -7,9 +7,9 @@ typedef struct {
     int top;
 } Stack;
 
-
+void init(Stack *);
 void push(Stack *, int);
-void pop(Stack*);
+int pop(Stack*);
 
 
 void push(Stack *sp, int value){
@@ -23,7 +23,7 @@ void push(Stack *sp, int value){
 }
 
 
-void pop(Stack *sp){
+int pop(Stack *sp){
 
     if(sp->top == -1){
         printf("Stack underflow");
@@ -34,10 +34,26 @@ void pop(Stack *sp){
     return value;
 }
 
+void init(Stack *sp){
+    sp->top = -1;
+}
+
 
 int main(){
 
     Stack s1, s2;
+
+    init(&s1);
+    init(&s2);
+
+    push(&s1,100);
+    push(&s1,200);
+
+    printf("Deleted from s1: %d\n", pop(&s1));
+    printf("Deleted from s1: %d\n", pop(&s1));
+    printf("Deleted from s1: %d\n", pop(&s1));
+
+
 
     return 0;
 }
