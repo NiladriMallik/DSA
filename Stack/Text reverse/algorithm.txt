@@ -1,0 +1,29 @@
+error = FALSE
+
+while NOT end of expression:
+    next_char = next character of input expression;
+    if next_char == '(' OR next_char =='{'  OR next_char  == '[' then
+        push(STACK, next_char)
+
+    else if next_char == ']' OR next_char =='}'  OR next_char  == ')' then
+        if isEmptyStack(STACK) then 
+            error = TRUE
+            break while
+        else if isOpeningMatch(stacktop(STACK),next_char) then
+            pop(STACK)
+        else
+            error = TRUE
+            break while
+        end if
+    end if
+end while
+
+if !error and !isEmpty(STACK) then 
+    error = TRUE
+end if
+
+if error = TRUE then
+    print "Input expression does not contain  well formed brackets."
+else
+    print "The input expression is  well formed."
+end if
