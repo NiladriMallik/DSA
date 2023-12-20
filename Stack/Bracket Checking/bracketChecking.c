@@ -51,9 +51,10 @@ int isEmpty(Stack *sp){
 
 char stackTop(Stack *sp){
     if(isEmpty(sp)){
-        return ' ';
+        printf("Stack underflow, terminating program");
+        exit(1);
     }
-    else return sp->item[sp->top];
+    return sp->item[sp->top];
 }
 
 int isOpeningMatch(char left, char right){
@@ -80,37 +81,46 @@ int isOpeningMatch(char left, char right){
 int checkExpr(char expr[]){
 
     int i = 0,error = 0;
-    char c;
-    Stack *sp;
-    sp->top = -1;
+    
+    Stack stack;
+    stack.top = -1;
     while(expr[i] != '\0'){
-        c = expr[i];
-        if (c == '(' || c == '[' || c == '}'){
-            push(&sp,c);
+        //get the next character
+        char c = expr[i];
+        if (c == '(' || c == '[' || c == '{'){
+            push(&stack,c);
+        /*  printf("\nItems in stack: ");
+                for(int j=0;j<=i;j++){
+                    printf("%c ",stack.item[i]);
+            }
+        */ 
         }
-
         else if(c == ')' || c == '}' || c == ']'){
-            if(isEmpty(&sp)){
+            if(isEmpty(&stack)){
                 error = 1;
                 break;
             }
-            else if(isOpeningMatch(stackTop(&sp),c)){
-                pop(&sp);
+            //check if the top of the stack matches with the character
+            else if(isOpeningMatch(stackTop(&stack),c)){
+                pop(&stack);
+            /*  printf("\nItems in stack: ");
+                for(int j=0;j<=i;j++){
+                    printf("%c ",stack.item[i]);
+                }
+            */ 
             }
             else{
                 error = 1;
                 break;
             }
         }
-        else continue;
+        ++i;
     }
-
-    if(!error && !isEmpty(&sp)){
+    //if we do not have any error but stack is still not empty
+    if(!error && !isEmpty(&stack)){
         error = 1;
     }
-
     return error;
-
 }
 
 int main(){
