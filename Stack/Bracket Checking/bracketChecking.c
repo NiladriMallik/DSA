@@ -126,13 +126,11 @@ int checkExpr(char expr[]){
     return error;
 }
 
+//function not completed
 int correctBracketOrder(char stackTop, char right){
 
     //correct order of brackets {[( )]} 
     int warn = 0;
-
-    
-
     return warn;
 }
 
