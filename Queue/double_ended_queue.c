@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-#define SIZE  20
+#define SIZE  8
 
 typedef struct {
     int item[SIZE];
@@ -16,7 +16,7 @@ int del_from_front(Queue *);
 
 void initQueue(Queue *queue){
     queue->front = 0;
-    queue->rear = 0;
+    queue->rear = -1;
 }
 
 void ins_at_rear(Queue *queue,int value){
@@ -31,18 +31,16 @@ void ins_at_rear(Queue *queue,int value){
 
 int del_from_rear(Queue *queue){
     if(queue->front > queue->rear){
-        printf("Queue underflow.\n");
         return -999;
     }
     int value = queue->item[queue->rear];
+    queue->rear--;
     return value;
-
-
 }
 
 
 void ins_at_front(Queue *queue,int value){
-    if(queue->front == SIZE - 0){
+    if(queue->front == 0){
         printf("Unable to insert at the front.\n");
         return;
     }
@@ -52,11 +50,10 @@ void ins_at_front(Queue *queue,int value){
 
 
 int del_from_front(Queue *queue){
-    if(queue->rear == queue->front){
+    if(queue->front > queue->rear){
         return -999;
     }
-    int value = queue->item[queue->front++];
-    return value;
+    return queue->item[queue->front++];
 
 }
 
@@ -65,9 +62,10 @@ void menu(){
     printf("---------------FIFO Queue Operations---------------\n");
     printf("---------------------------------------------------\n");
     printf("1. Insert at rear\n");
-    printf("2. Delete from rear\n");
-    printf("3. Insert at front\n");
+    printf("2. Insert at front\n");
+    printf("3. Delete from rear\n");
     printf("4. Delete from front\n");
+    printf("5. Exit\n");
 }
 
 
@@ -96,7 +94,27 @@ int main(){
                 break;
 
             case 3:
-                printf("");
+                value = del_from_rear(&queue);
+                if(value == -999)
+                    printf("Queue underflow.\n");
+                else
+                    printf("Delete from rear, value: %d.\n",value);
+                break;
+
+            case 4:
+                value = del_from_front(&queue);
+                if(value == -999)
+                    printf("Queue underflow.\n");
+                else
+                    printf("Deleted from front, value: %d.\n",value);
+                break;
+
+            case 5:
+                quit = 1;
+                break;
+            
+            default:
+                printf("Invalid choice, valid options are 1 - 5.\n");
         }
     }
 }

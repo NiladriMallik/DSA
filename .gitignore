@@ -3,3 +3,6 @@
 
 #ignore all .json files
 *.json
+
+#ignore all .image files (for now)
+*.png
