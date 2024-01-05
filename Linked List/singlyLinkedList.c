@@ -31,9 +31,9 @@ void printListDetail(LinkedList *);
 void printList(LinkedList *);
 Node *find(LinkedList *, int);
 
-void deleteFirst(LinkedList *);
-void deleteLast(LinkedList *);
-void deleteTarget(LinkedList *,int);
+int deleteFirst(LinkedList *);
+int deleteLast(LinkedList *);
+int deleteTarget(LinkedList *,int);
 
 void reverse(LinkedList *);
 
@@ -139,7 +139,7 @@ void printList(LinkedList *listptr){
 
 void printListDetail(LinkedList *listptr){
     if(listptr->nodeCount == 0){
-        printf("Linked list is empty.\n");
+        printf("\nLinked list is empty.\n");
         return;
     }
     printf("Printing linked list in details:\n");
@@ -167,6 +167,75 @@ Node *find(LinkedList *listptr,int target){
 }
 
 
+int deleteFirst(LinkedList *listptr){
+    int result;
+    if(listptr->nodeCount == 0){
+        return 0;
+    }
+    Node *temp = listptr->head;
+    if(listptr->nodeCount == 1){
+        listptr->head = NULL;
+        listptr->tail = NULL;       
+    }
+    else{
+        listptr->head = temp->next;
+    }
+    listptr->nodeCount--;
+    result = temp->data;
+    free(temp);
+    return result;
+}
+
+
+int deleteLast(LinkedList *listptr){
+    int result;
+    if(listptr->nodeCount == 0){
+        return 0;
+    }
+
+    Node *temp = listptr->head;
+    if(listptr->nodeCount == 1){
+        listptr->head = NULL;
+        listptr->tail = NULL;
+    }
+    else{
+        while(temp->next->next != NULL){
+            temp = temp->next;
+        }
+        listptr->tail = temp;
+        temp = temp->next;
+        listptr->tail->next = NULL;
+    }
+    result = temp->data;
+    free(temp);
+    listptr->nodeCount--;
+    return result;
+}
+
+
+int deleteTarget(LinkedList *listptr,int value){
+    if(listptr->nodeCount == 0){
+        return 0;
+    }
+    else if(listptr->nodeCount == 1){
+        Node *temp = listptr->head;
+        listptr->head = NULL;
+        listptr->tail = NULL;
+        free(temp);
+        listptr->nodeCount--;
+        return value;
+    }
+    else{
+        Node *temp = listptr->head, *temp2;
+        while(temp->next->data != value){
+            temp = temp->next;
+        }
+        temp2 = temp->next;
+        temp = temp->next->next;
+        free(temp2);
+        return value;
+    }
+}
 
 
 void menu(){
@@ -195,7 +264,7 @@ int main(){
     int quit = 0, choice, data, result;
 
     while(!quit){
-        printf("Enter your choice: ");
+        printf("\nEnter your choice: ");
         scanf("%d",&choice);
         switch(choice){
             case 1:
@@ -237,15 +306,29 @@ int main(){
                 break;
 
             case 8:
-                printf("Not implemented yet.\n");
+                result = deleteFirst(&list);
+                if(result == 0)
+                    printf("Empty linked list, no nodes to delete.\n");
+                else
+                    printf("%d has been deleted.\n",result);
                 break;
 
             case 9:
-                printf("Not implemented yet.\n");
+                result = deleteLast(&list);
+                if(result == 0)
+                    printf("Empty linked list, no nodes to delete.\n");
+                else
+                    printf("%d has been deleted.\n",result);
                 break;
 
             case 10:
-                printf("Not implemented yet.\n");
+                printf("Input data to delete: ");
+                scanf("%d",&data);
+                result = deleteTarget(&list,data);
+                if(result == 0)
+                    printf("Empty linked list, no nodes to delete.\n");
+                else
+                    printf("%d has been deleted.\n",result);
                 break;
 
             case 11:
@@ -260,9 +343,8 @@ int main(){
             default:
                 printf("Invalid choice. Please enter correct option.\n");
                 break;
-            
         }
+        printf("\n");
     }
-
     return 0;
 }
