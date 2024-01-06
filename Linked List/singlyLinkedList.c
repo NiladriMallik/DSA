@@ -12,6 +12,7 @@ typedef struct Node{
 head will point to the first node
 tail will point to the last node
 to get the address of the last node, we don't have to iterate through the linked list
+//nodeCount contains number of nodes in linked list
 */
 typedef struct{
     struct Node *head;
@@ -156,6 +157,7 @@ void printListDetail(LinkedList *listptr){
 
 
 Node *find(LinkedList *listptr,int target){
+    //prevptr is the address of a node pointer
     Node *temp = listptr->head;
     while(temp != NULL){
         if(temp->data == target){
@@ -178,62 +180,82 @@ int deleteFirst(LinkedList *listptr){
         listptr->tail = NULL;       
     }
     else{
-        listptr->head = temp->next;
+        listptr->head = temp->next;     //temp points to first node, assign next node to head
     }
     listptr->nodeCount--;
     result = temp->data;
-    free(temp);
-    return result;
+    free(temp);                         //free temp, i.e., the first node
+    return result;                      //return data value
 }
 
 
 int deleteLast(LinkedList *listptr){
-    int result;
-    if(listptr->nodeCount == 0){
+    int result;                             //to store the data value of the deleted node
+    if(listptr->nodeCount == 0){    
         return 0;
     }
-
     Node *temp = listptr->head;
     if(listptr->nodeCount == 1){
         listptr->head = NULL;
         listptr->tail = NULL;
     }
     else{
-        while(temp->next->next != NULL){
-            temp = temp->next;
+        while(temp->next->next != NULL){    //iterate till the temp points to the second last node
+            temp = temp->next;  
         }
-        listptr->tail = temp;
-        temp = temp->next;
-        listptr->tail->next = NULL;
+        listptr->tail = temp;               //assign second last node to tail
+        temp = temp->next;                  //assign the last node to temp
+        listptr->tail->next = NULL;         //assign next pointer of second last node as null
     }
-    result = temp->data;
-    free(temp);
-    listptr->nodeCount--;
+    result = temp->data;                 
+    free(temp);                             //free the last node
+    listptr->nodeCount--;   
     return result;
 }
 
 
 int deleteTarget(LinkedList *listptr,int value){
-    if(listptr->nodeCount == 0){
+    /*
+    return 0 - empty linked list
+    return -1 - element not found
+    return 1 - element deleted
+    */
+    if(listptr->nodeCount == 0){        //if linked list is empty
         return 0;
     }
-    else if(listptr->nodeCount == 1){
-        Node *temp = listptr->head;
-        listptr->head = NULL;
-        listptr->tail = NULL;
-        free(temp);
-        listptr->nodeCount--;
-        return value;
+    if(listptr->head->data == value){   //if value to be deleted is in first node
+        deleteFirst(listptr);
+        return 1;
     }
-    else{
-        Node *temp = listptr->head, *temp2;
-        while(temp->next->data != value){
+    if(listptr->tail->data == value){   //if value to be deleted is in last node
+        deleteLast(listptr);
+        return 1;
+    }
+
+    Node *temp = listptr->head, *prev;
+    if(listptr->nodeCount == 1){            //if only one node in linked list
+        if(listptr->head->data != value){   //node value not equal to target value
+            return -1;
+        }
+        else{
+            listptr->head = NULL;
+            listptr->tail = NULL;
+            return 1;
+        }
+    }
+    else{                           //if multiple nodes in linked list
+        while(temp->next->data != value && temp->next->next != NULL){
             temp = temp->next;
         }
-        temp2 = temp->next;
-        temp = temp->next->next;
-        free(temp2);
-        return value;
+        if(temp->next->next == NULL){       //if iterated to second last node and target node not found
+            return -1;
+        }
+        prev = temp;
+        temp = temp->next;
+        prev->next = temp->next;
+        free(temp);
+        listptr->nodeCount--;
+        return 1;
     }
 }
 
@@ -327,8 +349,10 @@ int main(){
                 result = deleteTarget(&list,data);
                 if(result == 0)
                     printf("Empty linked list, no nodes to delete.\n");
+                else if(result == -1)
+                    printf("%d not found in linked list.\n",data);
                 else
-                    printf("%d has been deleted.\n",result);
+                    printf("%d has been deleted.\n",data);
                 break;
 
             case 11:
