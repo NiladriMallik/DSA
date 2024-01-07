@@ -21,7 +21,7 @@ typedef struct{
 }LinkedList;
 
 
-//function prototyps
+//function prototypes
 void initList(LinkedList *);
 int loadFromFile(LinkedList *, char *);
 void createListFromRandomNumbers(LinkedList *, int);
@@ -30,13 +30,13 @@ void insertAtTail(LinkedList *, int);
 
 void printListDetail(LinkedList *);
 void printList(LinkedList *);
-Node *find(LinkedList *, int);
+Node *find(LinkedList *, int, Node **);
 
 int deleteFirst(LinkedList *);
 int deleteLast(LinkedList *);
 int deleteTarget(LinkedList *,int);
 
-void reverse(LinkedList *);
+int reverse(LinkedList *);
 
 
 void initList(LinkedList *listptr){
@@ -156,16 +156,17 @@ void printListDetail(LinkedList *listptr){
 }
 
 
-Node *find(LinkedList *listptr,int target){
-    //prevptr is the address of a node pointer
+Node *find(LinkedList *listptr,int target,  Node **prevptr){
     Node *temp = listptr->head;
+    *prevptr = NULL;
     while(temp != NULL){
         if(temp->data == target){
             break;
         }
+        *prevptr = temp;
         temp = temp->next;
-        return temp;
     }
+        return temp;
 }
 
 
@@ -213,13 +214,14 @@ int deleteLast(LinkedList *listptr){
     return result;
 }
 
-
+//deleteTarget implementation 1
+/*
 int deleteTarget(LinkedList *listptr,int value){
-    /*
+    
     return 0 - empty linked list
     return -1 - element not found
     return 1 - element deleted
-    */
+    
     if(listptr->nodeCount == 0){        //if linked list is empty
         return 0;
     }
@@ -258,6 +260,60 @@ int deleteTarget(LinkedList *listptr,int value){
         return 1;
     }
 }
+*/
+
+
+//deleteTarget implementation 2
+int deleteTarget(LinkedList *listptr, int value){
+    // return 0 - empty linked list
+    // return -1 - element not found
+    // return 1 - element deleted
+    Node *temp = NULL, *prev = NULL;
+    temp = find(listptr, value, &prev);
+
+    if(listptr->nodeCount == 0){
+        return 0;
+    }
+    if(temp == NULL){
+        return -1;
+    }
+    int data = temp->data;
+    if(temp == listptr->head){
+        return deleteFirst(listptr);
+    }
+    else if(temp == listptr->tail){
+        return deleteLast(listptr);
+    }
+    else{
+        prev->next = temp->next;
+        free(temp);
+        listptr->nodeCount--;
+        return 1;
+    }
+}
+
+
+int reverse(LinkedList *listptr){
+    if(listptr->nodeCount <= 1){
+        return 0;
+    }
+    Node *p, *q, *r;
+    q = NULL;
+    p = listptr->head;
+    r = p->next;
+    while(1){
+        p->next = q;
+        if(p == listptr->tail){
+            break;
+        }
+        q = p;
+        p = r;
+        r = r->next;
+    }
+    listptr->tail = listptr->head;
+    listptr->head = p;
+    return 1;
+}
 
 
 void menu(){
@@ -280,10 +336,11 @@ void menu(){
 
 int main(){
     LinkedList list;
+    int quit = 0, choice, data, result;
+    Node * temp = NULL, *prev = NULL;
     initList(&list);
     menu();
 
-    int quit = 0, choice, data, result;
 
     while(!quit){
         printf("\nEnter your choice: ");
@@ -324,7 +381,15 @@ int main(){
                 break;
             
             case 7:
-                printf("Not implemented yet.\n");
+                printf("Enter data to find: ");
+                scanf("%d",&data);
+                temp = find(&list, data, &prev);
+                if(temp == NULL){
+                    printf("Target not found in linked list.\n");
+                }
+                else{
+                    printf("Target found in linked list, address[data] of the target node: %p[%d], previous node[data]: %p[%d]\n",temp, temp->data, prev, prev->data);
+                }
                 break;
 
             case 8:
@@ -356,13 +421,18 @@ int main(){
                 break;
 
             case 11:
-                printf("Not implemented yet.\n");
+                result = reverse(&list);
+                if(result){
+                    printf("Linked list has been reversed.\n");
+                }
+                else{
+                    printf("Linked list empty, nothing to reverse.\n");
+                }
                 break;
 
             case 12:
                 quit = 1;
                 break;
-
         
             default:
                 printf("Invalid choice. Please enter correct option.\n");
