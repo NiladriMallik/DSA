@@ -341,7 +341,6 @@ int main(){
     initList(&list);
     menu();
 
-
     while(!quit){
         printf("\nEnter your choice: ");
         scanf("%d",&choice);
